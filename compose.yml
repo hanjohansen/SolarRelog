@@ -1,0 +1,14 @@
+version: "3.3"
+services:
+    api:
+        build:
+            context: SolarRelogDevDevice/
+            dockerfile: ./Dockerfile
+        container_name: solar_log_dev_device
+        restart: unless-stopped
+        environment:
+            - ASPNETCORE_URLS=http://+:5010
+            - ASPNETCORE_ENVIRONMENT=Development
+        ports:
+            - 5010:5010
+
