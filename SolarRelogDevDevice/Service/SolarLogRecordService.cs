@@ -5,6 +5,7 @@ namespace SolarRelog.DevDevice.Service;
 public class SolarLogRecordService
 {
     private readonly SolarLogRecord _record;
+    private readonly SolarLogConsumers _consumers;
 
     public SolarLogRecordService(){
         var date = DateTime.Now;
@@ -29,10 +30,24 @@ public class SolarLogRecordService
                 ConsYieldTotal = 4 * ((300 * 30 * (date.Month - 1)) + (300 * date.Day)),
             }
         };
+
+        var rand = new Random();
+        _consumers = new SolarLogConsumers
+        {
+            Consumer1 = rand.Next(500, 2000).ToString(),
+            Consumer2 = rand.Next(500, 2000).ToString(),
+            Consumer3 = rand.Next(500, 2000).ToString(),
+            Consumer4 = rand.Next(500, 2000).ToString()
+        };
     }
 
-    public SolarLogRequest GetLogRecord(){
-        return new SolarLogRequest(){Record = _record};
+    public SolarLogRequest GetLogRecord(bool includeRecord, bool includeConsumers){
+        var request = new SolarLogRequest
+        {
+            Record = includeRecord ? _record : null,
+            Consumers = includeConsumers ? _consumers : null
+        };
+        return request;
     }
 
     public void UpdateData(){
@@ -71,5 +86,9 @@ public class SolarLogRecordService
         }
 
         _record.Data.Date = newDate;
+        _consumers.Consumer1 = rand.Next(500, 2000).ToString();
+        _consumers.Consumer2 = rand.Next(500, 2000).ToString();
+        _consumers.Consumer3 = rand.Next(500, 2000).ToString();
+        _consumers.Consumer4 = rand.Next(500, 2000).ToString();
     }
 }

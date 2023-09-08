@@ -5,6 +5,9 @@ namespace SolarRelog.DevDevice.Domain;
 public class SolarLogRequest{
     [JsonPropertyName("801")]
     public SolarLogRecord? Record {get;set;}
+
+    [JsonPropertyName("782")]
+    public SolarLogConsumers? Consumers {get;set;}
 };
 
 public class SolarLogRecord{
@@ -66,6 +69,14 @@ public class SolarLogData{
 
     [JsonPropertyName("116")]
     public decimal TotalPower {get;set;} //in Wp. Summierter Gesamtverbrauch; alle Verbrauchszähler
+}
+
+public class SolarLogConsumers
+{
+    [JsonPropertyName("0")] public string Consumer1 { get; set; } = null!;
+    [JsonPropertyName("1")] public string Consumer2 { get; set; } = null!;
+    [JsonPropertyName("2")] public string Consumer3 { get; set; } = null!;
+    [JsonPropertyName("3")] public string Consumer4 { get; set; } = null!;
 }
 
 
