@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-
-namespace SolarRelog.Application.Exceptions;
+﻿namespace SolarRelog.Application.Exceptions;
 
 public class ExceptionMiddleware
 {    

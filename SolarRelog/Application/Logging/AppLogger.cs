@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SolarRelog.Application.Logging.Data;
 
 namespace SolarRelog.Application.Logging;
