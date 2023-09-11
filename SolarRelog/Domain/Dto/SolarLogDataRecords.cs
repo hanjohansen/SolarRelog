@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SolarRelog.DevDevice.Domain;
+namespace SolarRelog.Domain.Dto;
 
 public class SolarLogRequest{
     [JsonPropertyName("801")]

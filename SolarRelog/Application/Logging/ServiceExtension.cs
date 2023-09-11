@@ -14,6 +14,7 @@ public static class ServiceExtension
                 => opt.UseSqlite(connString));
         
         var serviceProvider = builder.Services.BuildServiceProvider();
+        
         builder.Logging
             .ClearProviders()
             .AddProvider(new AppLoggerProvider(serviceProvider));

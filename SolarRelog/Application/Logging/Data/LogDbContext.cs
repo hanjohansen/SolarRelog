@@ -4,7 +4,7 @@ namespace SolarRelog.Application.Logging.Data;
 
 public class LogDbContext : DbContext
 {
-    public LogDbContext(DbContextOptions opt) : base(opt){}
+    public LogDbContext(DbContextOptions<LogDbContext> opt) : base(opt){}
     
     public DbSet<LogEntity> Logs { get; set; } = null!;
 

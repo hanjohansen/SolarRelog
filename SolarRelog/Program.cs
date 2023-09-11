@@ -1,11 +1,19 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using SolarRelog.Application.Cache;
 using SolarRelog.Application.Exceptions;
 using SolarRelog.Application.Logging;
+using SolarRelog.Application.Services;
+using SolarRelog.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.ConfigureAppDatabase();
+builder.ConfigureAppServices();
+builder.ConfigureAppCaching();
 builder.ConfigureAppLogging();
+
 
 builder.Services.AddMediatR(cfg 
     => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
@@ -13,13 +21,13 @@ builder.Services.AddMediatR(cfg
 builder.Services.AddControllers()
     .AddJsonOptions(options => {
         options.JsonSerializerOptions.Converters.Add (new JsonStringEnumConverter ());
-    });  
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-app.Logger.Log(LogLevel.Information, 0, "Starting App");
+app.Logger.LogInformation( "Starting App");
 
 app.UseSwagger();
 app.UseSwaggerUI();
