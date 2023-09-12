@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using SolarRelog.Application.Cache;
 using SolarRelog.Application.Exceptions;
+using SolarRelog.Application.Jobs;
 using SolarRelog.Application.Logging;
 using SolarRelog.Application.Services;
 using SolarRelog.Infrastructure;
@@ -13,6 +14,7 @@ builder.ConfigureAppDatabase();
 builder.ConfigureAppServices();
 builder.ConfigureAppCaching();
 builder.ConfigureAppLogging();
+builder.ConfigureAppJobs();
 
 
 builder.Services.AddMediatR(cfg 
