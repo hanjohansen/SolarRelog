@@ -40,6 +40,7 @@ public class GetLogsQueryHandler : IRequestHandler<GetLogsQuery, List<LogEntity>
             : query.Where(x => x.TimeStamp > min && x.TimeStamp < max);
         
         var logs = await query
+            .AsNoTracking()
             .OrderBy(x => x.TimeStamp)
             .ToListAsync(cancellationToken);
 

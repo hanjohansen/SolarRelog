@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SolarRelog.Application.Logging.Data;
 using SolarRelog.Application.Queries;
 
-namespace SolarRelog.Controllers.Logs;
+namespace SolarRelog.Controllers;
 
 public class LogsController : Endpoint
 {

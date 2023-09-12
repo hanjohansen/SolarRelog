@@ -9,7 +9,7 @@ public class SettingsEntity
 
 public class AppLogSettings
 {
-    public int RetentionDays { get; set; } = 180;
+    public int RetentionDays { get; set; } = 30;
 
     public LogLevel MinLogLevel { get; set; } = LogLevel.Information;
 }

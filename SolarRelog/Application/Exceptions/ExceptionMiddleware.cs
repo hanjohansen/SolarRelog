@@ -35,6 +35,11 @@ public class ExceptionMiddleware
                 response.StatusCode = StatusCodes.Status400BadRequest;
                 jsonResult = new { Error = exception.Message };
                 break;
+            case EntityNotFoundException _:
+                logger.LogError(exception, exception.Message);
+                response.StatusCode = StatusCodes.Status404NotFound;
+                jsonResult = new { Error = exception.Message };
+                break;
             default:
                 logger.LogCritical(exception, exception.Message);
                 response.StatusCode = StatusCodes.Status500InternalServerError;

@@ -24,7 +24,9 @@ public class SettingsService
             return settings;
 
         var context = new AppDbContext(_dbContextOptions);
-        settings = await context.Settings.FirstOrDefaultAsync();
+        settings = await context.Settings
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
         if (settings != null)
         {

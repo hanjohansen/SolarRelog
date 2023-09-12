@@ -3,7 +3,7 @@ using SolarRelog.Application.Commands.Settings;
 using SolarRelog.Application.Queries;
 using SolarRelog.Domain.Dto;
 
-namespace SolarRelog.Controllers.Settings;
+namespace SolarRelog.Controllers;
 
 public class SettingsController : Endpoint
 {

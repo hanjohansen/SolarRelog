@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SolarRelog.Application.Commands.Backup;
 
-namespace SolarRelog.Controllers.Backup;
+namespace SolarRelog.Controllers;
 
 public class BackupController : Endpoint
 {
