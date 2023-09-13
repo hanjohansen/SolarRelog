@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SolarRelog.Application.Logging.Data;
 
 namespace SolarRelog.Infrastructure;
 

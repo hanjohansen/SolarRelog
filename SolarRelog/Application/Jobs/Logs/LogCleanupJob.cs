@@ -36,7 +36,7 @@ public class LogCleanupJob : ISolarRelogJob
             .ExecuteDeleteAsync();
     }
 
-    private async Task RescheduleJob(IJobExecutionContext context)
+    private static async Task RescheduleJob(IJobExecutionContext context)
     {
         await context.Scheduler.UnscheduleJob(context.Trigger.Key);
         

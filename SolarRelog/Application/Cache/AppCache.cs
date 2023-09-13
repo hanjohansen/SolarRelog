@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using SolarRelog.Domain.Entities;
 
 namespace SolarRelog.Application.Cache;
 

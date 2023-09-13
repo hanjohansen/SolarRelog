@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using SolarRelog.Domain.Entities;
 
 namespace SolarRelog.Domain.Dto;
 
@@ -12,12 +13,11 @@ public class SolarLogRecord{
     public SolarLogData? Data {get;set;}
 };
 
-public class SolarLogData{
-    [JsonIgnore]
-    public DateTime Date {get;set;} //Uhrzeit
+public class SolarLogData
+{
 
-    [JsonPropertyName("100")]
-    public string LastUpdateTime => Date.ToString("dd.MM.yy HH:mm:ss"); //Uhrzeit
+    [JsonPropertyName("100")] 
+    public string LastUpdateTime { get; set; } = null!; //Date.ToString("dd.MM.yy HH:mm:ss"); //Uhrzeit
 
     [JsonPropertyName("101")]
     public decimal Pac {get;set;} //in W. Gesamte Leistung PAC von allen Wech-selrichtern und Zählern im Wechselrichtermodus
@@ -66,6 +66,36 @@ public class SolarLogData{
 
     [JsonPropertyName("116")]
     public decimal TotalPower {get;set;} //in Wp. Summierter Gesamtverbrauch; alle Verbrauchszähler
+
+    public LogDataEntity ToEntity()
+    {
+        DateTime loggedDate;
+        
+        if(!DateTime.TryParseExact(LastUpdateTime, "dd.MM.yy HH:mm:ss", null,System.Globalization.DateTimeStyles.None, out loggedDate))
+            loggedDate = DateTime.Now;
+
+        return new LogDataEntity
+        {
+            RecordDate = DateTime.Now,
+            LoggedDate = loggedDate,
+            Pac = Pac,
+            Pdc = Pdc,
+            Uac = Uac,
+            Udc = Udc,
+            YieldDay = YieldDay,
+            YieldYesterday = YieldYesterday,
+            YieldMonth = YieldMonth,
+            YieldYear = YieldYear,
+            YieldTotal = YieldTotal,
+            ConsPac = ConsPac,
+            ConsYieldDay = ConsYieldDay,
+            ConsYieldYesterday = ConsYieldYesterday,
+            ConsYieldMonth = ConsYieldMonth,
+            ConsYieldYear = ConsYieldYear,
+            ConsYieldTotal = ConsYieldTotal,
+            TotalPower = TotalPower,
+        };
+    }
 }
 
 

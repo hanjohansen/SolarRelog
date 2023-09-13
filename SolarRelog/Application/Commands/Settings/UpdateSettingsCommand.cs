@@ -24,9 +24,9 @@ public class UpdateSettingsCommandHandler : IRequestHandler<UpdateSettingsComman
         var model = request.Payload;
         ValidateModel(model);
 
-        var settings = new SettingsEntity()
+        var settings = new SettingsEntity
         {
-            AppLogSettings = new()
+            AppLogSettings = new AppLogSettings
             {
                 RetentionDays = model.LogSettings.RetentionDays,
                 MinLogLevel = model.LogSettings.MinLogLevel
@@ -38,14 +38,13 @@ public class UpdateSettingsCommandHandler : IRequestHandler<UpdateSettingsComman
         _logger.LogInformation("Settings updated by user");
     }
 
-    private void ValidateModel(SettingsModel model)
+    private static void ValidateModel(SettingsModel model)
     {
-        if(model.LogSettings.RetentionDays < 1
-           || model.LogSettings.RetentionDays > 365)
+        if(model.LogSettings.RetentionDays is < 1 or > 365)
             ThrowException("LogSettings.RetentionDays: only 1 to 365 days are supported");
     }
 
-    private void ThrowException(string message)
+    private static void ThrowException(string message)
     {
         throw new AppException(message);
     }

@@ -41,11 +41,10 @@ public class UpdateDeviceCommandHandler : IRequestHandler<UpdateDeviceCommand>
         device.IsActive = request.IsActive;
         
         await _dbContext.SaveChangesAsync(cancellationToken);
-        
-        if(device.Ip == oldIp)
-            _logger.LogInformation($"Updated device with Ip '{device.Ip}'");
-        else 
-            _logger.LogInformation($"Updated device with Ip (old/new) '{oldIp}/{device.Ip}'");
+
+        _logger.LogInformation(device.Ip == oldIp
+            ? $"Updated device with Ip '{device.Ip}'"
+            : $"Updated device with Ip (old/new) '{oldIp}/{device.Ip}'");
     }
 }
     

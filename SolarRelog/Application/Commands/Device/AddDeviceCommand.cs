@@ -21,7 +21,7 @@ public record AddDeviceCommand(
         if(string.IsNullOrEmpty(Ip))
             Throw("Device ip must be set");
         
-        if (IPAddress.TryParse(Ip, out IPAddress? address))
+        if (IPAddress.TryParse(Ip, out var address))
         {
             switch (address.AddressFamily)
             {
@@ -36,16 +36,11 @@ public record AddDeviceCommand(
         else
             Throw("Device IP is not valid");
 
-        if (Port == null)
-            return;
-
-        int port = Port.Value;
-        
-        if(port < 0 || port > 65535)
+        if(Port is < 0 or > 65535)
             Throw("Device port is not valid");
     }
 
-    private void Throw(string message)
+    private static void Throw(string message)
     {
         throw new AppException(message);
     }
@@ -72,7 +67,7 @@ public class AddDeviceCommandHandler : IRequestHandler<AddDeviceCommand>
         if (existing != null)
             throw new AppException("Provided Ip is already used by an existing device");
 
-        var newDevice = new DeviceEntity()
+        var newDevice = new DeviceEntity
         {
             Name = request.Name,
             Ip = request.Ip,

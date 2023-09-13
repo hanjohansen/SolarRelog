@@ -23,7 +23,7 @@ public class GetLogsQueryHandler : IRequestHandler<GetLogsQuery, List<LogEntity>
 
         var fDate = request.From ?? DateTime.Now;
         var tDate = request.To ?? DateTime.Now;
-        var both = new List<DateTime>() { fDate, tDate };
+        var both = new List<DateTime> { fDate, tDate };
 
         var min = both.Min();
         var max = both.Max();

@@ -11,4 +11,6 @@ public class DeviceEntity
     public int? Port { get; set; }
     
     public bool IsActive { get; set; }
+
+    public List<LogDataEntity> LogData { get; set; } = new();
 }

@@ -21,21 +21,21 @@ public class ExceptionMiddleware
         }
     }
                      
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger logger)
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger logger)
     {
         var response = context.Response;
         response.ContentType = "application/json";
 
-        object? jsonResult = null;
+        object? jsonResult;
 
         switch (exception)
         {
-            case AppException _:
+            case AppException:
                 logger.LogError(exception, exception.Message);
                 response.StatusCode = StatusCodes.Status400BadRequest;
                 jsonResult = new { Error = exception.Message };
                 break;
-            case EntityNotFoundException _:
+            case EntityNotFoundException:
                 logger.LogError(exception, exception.Message);
                 response.StatusCode = StatusCodes.Status404NotFound;
                 jsonResult = new { Error = exception.Message };

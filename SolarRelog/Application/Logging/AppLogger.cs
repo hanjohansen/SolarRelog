@@ -37,7 +37,7 @@ public class AppLogger : ILogger
             ? JsonConvert.SerializeObject(exception)
             : null;
 
-        var logRecord = new LogEntity()
+        var logRecord = new LogEntity
         {
             TimeStamp = DateTime.Now,
             Level = logLevel,
