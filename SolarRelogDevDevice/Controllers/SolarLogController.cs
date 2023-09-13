@@ -16,14 +16,23 @@ public class SolarLogController : ControllerBase
 
     [HttpPost]
     [Route("getjp", Name= "GetSolarData")]
-    public ActionResult<SolarLogRequest> GetData([FromBody] string content)
+    public ActionResult<SolarLogRequest> GetData([FromBody] object content)
     {
-        var jsonObject = JsonSerializer.Deserialize<JsonElement>(content);
+        JsonElement jsonElement;
+
+        try
+        {
+            jsonElement = JsonSerializer.Deserialize<JsonElement>(content.ToString() ?? string.Empty);
+        }
+        catch
+        {
+            return BadRequest("invalid request content. valid values: {\"801\":{\"170\":null}, \"782\":null}");
+        }
 
         var includeRecord = false;
         var includeConsumers = false;
         
-        foreach (var property in jsonObject.EnumerateObject().OfType<JsonProperty>())
+        foreach (var property in jsonElement.EnumerateObject().OfType<JsonProperty>())
         {
             if (property.Name.Equals("801", StringComparison.OrdinalIgnoreCase))
                 includeRecord = true;
@@ -32,7 +41,7 @@ public class SolarLogController : ControllerBase
         }
 
         if (!includeRecord && !includeConsumers)
-            return BadRequest("invalid request content. valid values: {\"801\":null} or {\"782\":null} or {\"801\":null,\"782\":null}");
+            return BadRequest("invalid request content. valid values: {\"801\":{\"170\":null}, \"782\":null}");
 
         var record = _recordService.GetLogRecord(includeRecord, includeConsumers);
         
