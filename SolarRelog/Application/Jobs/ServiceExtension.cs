@@ -9,7 +9,7 @@ public static class ServiceExtension
     {
         builder.Services.AddQuartz(q =>
         {
-            var jobKey = LogCleanupJob.JobKey;
+            var jobKey = LogCleanupJob.Key;
             q.AddJob<LogCleanupJob>(opts => 
                 opts.WithIdentity(jobKey)
                     .StoreDurably());

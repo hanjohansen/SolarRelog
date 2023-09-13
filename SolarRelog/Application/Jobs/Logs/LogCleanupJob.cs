@@ -11,8 +11,7 @@ public class LogCleanupJob : ISolarRelogJob
     private readonly LogDbContext _logContext;
     private readonly SettingsService _settingsService;
     
-    private const string KeyName = "clean-logs-job";
-    private const string KeyGroup = "logs";
+    private static readonly JobKey JobKey = new ("clean-logs-job", "logs");
 
     public LogCleanupJob(ILogger logger, LogDbContext logContext, SettingsService settingsService)
     {
@@ -20,8 +19,8 @@ public class LogCleanupJob : ISolarRelogJob
         _logContext = logContext;
         _settingsService = settingsService;
     }
-    
-    public static JobKey JobKey => new (KeyName, KeyGroup);
+
+    public static JobKey Key => JobKey;
     
     public async Task Execute(IJobExecutionContext context)
     {
