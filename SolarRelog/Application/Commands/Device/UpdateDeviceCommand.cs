@@ -1,8 +1,6 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Quartz;
-using SolarRelog.Application.Exceptions;
-using SolarRelog.Infrastructure;
+using SolarRelog.Application.ServiceInterfaces;
 
 namespace SolarRelog.Application.Commands.Device;
 
@@ -15,41 +13,32 @@ public record UpdateDeviceCommand(
 
 public class UpdateDeviceCommandHandler : BaseDeviceCommandHandler, IRequestHandler<UpdateDeviceCommand>
 {
-    private readonly AppDbContext _dbContext;
     private readonly ILogger _logger;
+    private readonly IDeviceService _devices;
     private readonly ISchedulerFactory _schedulerFactory;
 
-    public UpdateDeviceCommandHandler(AppDbContext dbContext, ILogger logger, ISchedulerFactory schedulerFactory)
+    public UpdateDeviceCommandHandler(ILogger logger, ISchedulerFactory schedulerFactory, IDeviceService devices)
     {
-        _dbContext = dbContext;
         _logger = logger;
         _schedulerFactory = schedulerFactory;
+        _devices = devices;
     }
 
     public async Task Handle(UpdateDeviceCommand request, CancellationToken cancellationToken)
     {
         request.Validate();
 
-        var device = await _dbContext.Devices
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+        await _devices.UpdateEntity(
+            request.Id,
+            request.Name,
+            request.Ip,
+            request.Port,
+            request.IsActive,
+            cancellationToken);
 
-        if (device == null)
-            throw new EntityNotFoundException($"No device with id '{request.Id}' found");
+        _logger.LogInformation($"Updated device with Id '{request.Id}'");
 
-        var oldIp = device.Ip;
-        
-        device.Name = request.Name;
-        device.Ip = request.Ip;
-        device.Port = request.Port;
-        device.IsActive = request.IsActive;
-        
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation(device.Ip == oldIp
-            ? $"Updated device with Ip '{device.Ip}'"
-            : $"Updated device with Ip (old/new) '{oldIp}/{device.Ip}'");
-
-        await UnpausePollingJob(_dbContext, _schedulerFactory, _logger); 
+        await UnpausePollingJob(_devices, _schedulerFactory, _logger); 
     }
 }
     

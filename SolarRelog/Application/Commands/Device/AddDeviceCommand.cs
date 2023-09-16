@@ -1,10 +1,9 @@
 ﻿using System.Net;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Quartz;
 using SolarRelog.Application.Exceptions;
+using SolarRelog.Application.ServiceInterfaces;
 using SolarRelog.Domain.Entities;
-using SolarRelog.Infrastructure;
 
 namespace SolarRelog.Application.Commands.Device;
 
@@ -49,23 +48,22 @@ public record AddDeviceCommand(
 
 public class AddDeviceCommandHandler : BaseDeviceCommandHandler, IRequestHandler<AddDeviceCommand>
 {
-    private readonly AppDbContext _dbContext;
     private readonly ILogger _logger;
+    private readonly IDeviceService _devices;
     private readonly ISchedulerFactory _schedulerFactory;
 
-    public AddDeviceCommandHandler(AppDbContext dbContext, ILogger logger, ISchedulerFactory schedulerFactory)
+    public AddDeviceCommandHandler(ILogger logger, ISchedulerFactory schedulerFactory, IDeviceService devices)
     {
-        _dbContext = dbContext;
         _logger = logger;
         _schedulerFactory = schedulerFactory;
+        _devices = devices;
     }
 
-    public async Task Handle(AddDeviceCommand request, CancellationToken cancellationToken)
+    public async Task Handle(AddDeviceCommand request, CancellationToken ct)
     {
         request.Validate();
 
-        var existing = await _dbContext.Devices
-            .FirstOrDefaultAsync(x => x.Ip == request.Ip, cancellationToken);
+        var existing = await _devices.GetDeviceByIp(request.Ip, ct);
 
         if (existing != null)
             throw new AppException("Provided Ip is already used by an existing device");
@@ -78,12 +76,11 @@ public class AddDeviceCommandHandler : BaseDeviceCommandHandler, IRequestHandler
             IsActive = request.IsActive
         };
 
-        await _dbContext.Devices.AddAsync(newDevice, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _devices.AddDevice(newDevice, ct);
         
         _logger.LogInformation($"Created device for Ip '{newDevice.Ip}'");
 
-        await UnpausePollingJob(_dbContext, _schedulerFactory, _logger);
+        await UnpausePollingJob(_devices, _schedulerFactory, _logger);
     }
 }
     

@@ -1,7 +1,6 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using SolarRelog.Application.ServiceInterfaces;
 using SolarRelog.Domain.Entities;
-using SolarRelog.Infrastructure;
 
 namespace SolarRelog.Application.Queries;
 
@@ -9,19 +8,15 @@ public record GetDevicesQuery : IRequest<List<DeviceEntity>>;
 
 public class GetDevicesQueryHandler : IRequestHandler<GetDevicesQuery, List<DeviceEntity>>
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IDeviceService _devices;
 
-    public GetDevicesQueryHandler(AppDbContext dbContext)
+    public GetDevicesQueryHandler(IDeviceService devices)
     {
-        _dbContext = dbContext;
+        _devices = devices;
     }
 
     public async Task<List<DeviceEntity>> Handle(GetDevicesQuery request, CancellationToken cancellationToken)
     {
-        var devices = await _dbContext.Devices
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-
-        return devices;
+        return await _devices.GetAllDevices(cancellationToken);
     }
 }

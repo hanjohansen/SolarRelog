@@ -1,18 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Quartz;
+﻿using Quartz;
 using SolarRelog.Application.Jobs.LogRecords;
-using SolarRelog.Infrastructure;
+using SolarRelog.Application.ServiceInterfaces;
 
 namespace SolarRelog.Application.Commands.Device;
 
 public class BaseDeviceCommandHandler
 {
-    protected async Task UnpausePollingJob(AppDbContext context, ISchedulerFactory schedulerFactory, ILogger logger)
+    protected async Task UnpausePollingJob(IDeviceService deviceService, ISchedulerFactory schedulerFactory, ILogger logger)
     {
-        var devices = await context.Devices
-            .AsNoTracking()
-            .Where(x => x.IsActive)
-            .ToListAsync();
+        var devices = await deviceService.GetActiveDevices();
 
         if (!devices.Any())
             return;

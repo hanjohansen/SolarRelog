@@ -1,28 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Quartz;
+﻿using Quartz;
 using SolarRelog.Application.Exceptions;
+using SolarRelog.Application.ServiceInterfaces;
 using SolarRelog.Application.Services;
 using SolarRelog.Domain.Dto;
 using SolarRelog.Domain.Entities;
-using SolarRelog.Infrastructure;
 
 namespace SolarRelog.Application.Jobs.LogRecords;
 
 public class LogDataJob : IJob
 {
+    private readonly IDeviceService _devices;
+    private readonly ILogDataService _logData;
     private readonly SettingsService _settingsService;
     private readonly SolarLogClientService _clientService;
-    private readonly AppDbContext _dbContext;
     private readonly ILogger _logger;
 
     private static readonly JobKey JobKey = new ("request-log-data-job", "log-data");
 
-    public LogDataJob(SettingsService settingsService, AppDbContext dbContext, SolarLogClientService clientService, ILogger logger)
+    public LogDataJob(SettingsService settingsService, SolarLogClientService clientService, ILogger logger, IDeviceService devices, ILogDataService logData)
     {
         _settingsService = settingsService;
-        _dbContext = dbContext;
         _clientService = clientService;
         _logger = logger;
+        _devices = devices;
+        _logData = logData;
     }
 
     public static JobKey Key => JobKey;
@@ -31,10 +32,7 @@ public class LogDataJob : IJob
     {
         await RescheduleJob(context);
 
-        var devices = await _dbContext.Devices
-            .AsNoTracking()
-            .Where(x => x.IsActive)
-            .ToListAsync();
+        var devices = await _devices.GetActiveDevices();
 
         if (!devices.Any())
         {
@@ -42,15 +40,20 @@ public class LogDataJob : IJob
             await context.Scheduler.PauseJob(JobKey);
             return;
         }
-            
-        
-        foreach (var device in devices)
-            await ProcessDevice(device);
 
-        await _dbContext.SaveChangesAsync();
+        var logs = new List<LogDataEntity>();
+
+        foreach (var device in devices)
+        {
+            var log = await ProcessDevice(device);
+            if(log != null)
+                logs.Add(log);
+        }
+
+        await _logData.AddLogData(logs);
     }
 
-    private async Task ProcessDevice(DeviceEntity device)
+    private async Task<LogDataEntity?> ProcessDevice(DeviceEntity device)
     {
         try
         {
@@ -59,12 +62,14 @@ public class LogDataJob : IJob
             var newEntity = logData.ToEntity()!;
             newEntity.DeviceId = device.Id;
 
-            await _dbContext.Logs.AddAsync(newEntity);
+            return newEntity;
         }
         catch (Exception ex)
         {
             _logger.Log(LogLevel.Error, ex.Message, ex.InnerException?.Message);
         }
+
+        return null;
     }
 
     private async Task<SolarLogRequest> GetLogData(string ip, int? port)
