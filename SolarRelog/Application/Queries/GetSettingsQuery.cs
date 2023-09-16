@@ -19,6 +19,6 @@ public class SettingsQueryHandler : IRequestHandler<GetSettingsQuery, SettingsMo
     {
         var settings = await _settingsService.GetSettings();
 
-        return new SettingsModel(settings.AppLogSettings);
+        return new SettingsModel(settings.AppLogSettings, settings.DataLogSettings);
     }
 }

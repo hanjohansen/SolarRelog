@@ -7,8 +7,8 @@ public class LogConsumerData
     public Guid LogDataId { get; set; }
 
     public LogDataEntity LogData { get; set; } = null!;
-    
-    public int ConsumerIndex { get; set; }
+
+    public string ConsumerIndex { get; set; } = null!;
     
     public decimal Consumption { get; set; }
 }

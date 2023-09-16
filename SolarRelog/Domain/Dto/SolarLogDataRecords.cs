@@ -6,6 +6,34 @@ namespace SolarRelog.Domain.Dto;
 public class SolarLogRequest{
     [JsonPropertyName("801")]
     public SolarLogRecord? Record {get;set;}
+    
+    [JsonPropertyName("782")]
+    public Dictionary<string, string>? ConsumerData {get;set;}
+
+    public LogDataEntity? ToEntity()
+    {
+        if (Record == null || Record.Data == null)
+            return null;
+
+        var entity = Record.Data.ToEntity();
+
+        if (ConsumerData == null)
+            return entity;
+
+        foreach (var index in ConsumerData.Keys)
+        {
+            var consumption = 0m;
+            decimal.TryParse(ConsumerData[index], out consumption);
+            
+            entity.ConsumerData.Add(new LogConsumerData()
+            {
+                ConsumerIndex = index,
+                Consumption = consumption
+            });
+        }
+
+        return entity;
+    }
 };
 
 public class SolarLogRecord{

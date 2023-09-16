@@ -1,4 +1,5 @@
 ﻿using Quartz;
+using SolarRelog.Application.Jobs.LogRecords;
 using SolarRelog.Application.Jobs.Logs;
 
 namespace SolarRelog.Application.Jobs;
@@ -9,12 +10,18 @@ public static class ServiceExtension
     {
         builder.Services.AddQuartz(q =>
         {
-            var jobKey = LogCleanupJob.Key;
-            q.AddJob<LogCleanupJob>(opts => 
-                opts.WithIdentity(jobKey)
-                    .StoreDurably());
+            q.AddJob<LogCleanupJob>(opts => opts
+                .WithIdentity(LogCleanupJob.Key)
+                .StoreDurably());
             q.AddTrigger(opts => opts
-                .ForJob(jobKey)
+                .ForJob(LogCleanupJob.Key)
+                .StartAt(DateTimeOffset.UtcNow.AddSeconds(30)));
+
+            q.AddJob<LogDataJob>(opts => opts
+                .WithIdentity(LogDataJob.Key)
+                .StoreDurably());
+            q.AddTrigger(opts => opts
+                .ForJob(LogDataJob.Key)
                 .StartAt(DateTimeOffset.UtcNow.AddSeconds(30)));
         });
         

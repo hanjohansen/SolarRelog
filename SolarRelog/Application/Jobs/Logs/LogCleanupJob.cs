@@ -5,7 +5,7 @@ using SolarRelog.Application.Services;
 
 namespace SolarRelog.Application.Jobs.Logs;
 
-public class LogCleanupJob : ISolarRelogJob
+public class LogCleanupJob : IJob
 {
     private readonly ILogger _logger;
     private readonly LogDbContext _logContext;
@@ -21,7 +21,7 @@ public class LogCleanupJob : ISolarRelogJob
     }
 
     public static JobKey Key => JobKey;
-    
+
     public async Task Execute(IJobExecutionContext context)
     {
         await RescheduleJob(context);
@@ -38,13 +38,11 @@ public class LogCleanupJob : ISolarRelogJob
 
     private static async Task RescheduleJob(IJobExecutionContext context)
     {
-        await context.Scheduler.UnscheduleJob(context.Trigger.Key);
-        
         var newTrigger = TriggerBuilder.Create()
             .ForJob(JobKey)
             .StartAt(DateTimeOffset.UtcNow.AddDays(1))
             .Build();
         
-        await context.Scheduler.ScheduleJob(newTrigger);
+        await context.Scheduler.RescheduleJob(context.Trigger.Key, newTrigger);
     }
 }

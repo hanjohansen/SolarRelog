@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using SolarRelog.Application.Exceptions;
 using SolarRelog.Domain.Entities;
 using SolarRelog.Infrastructure;
@@ -46,15 +47,17 @@ public record AddDeviceCommand(
     }
 }
 
-public class AddDeviceCommandHandler : IRequestHandler<AddDeviceCommand>
+public class AddDeviceCommandHandler : BaseDeviceCommandHandler, IRequestHandler<AddDeviceCommand>
 {
     private readonly AppDbContext _dbContext;
     private readonly ILogger _logger;
+    private readonly ISchedulerFactory _schedulerFactory;
 
-    public AddDeviceCommandHandler(AppDbContext dbContext, ILogger logger)
+    public AddDeviceCommandHandler(AppDbContext dbContext, ILogger logger, ISchedulerFactory schedulerFactory)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _schedulerFactory = schedulerFactory;
     }
 
     public async Task Handle(AddDeviceCommand request, CancellationToken cancellationToken)
@@ -79,6 +82,8 @@ public class AddDeviceCommandHandler : IRequestHandler<AddDeviceCommand>
         await _dbContext.SaveChangesAsync(cancellationToken);
         
         _logger.LogInformation($"Created device for Ip '{newDevice.Ip}'");
+
+        await UnpausePollingJob(_dbContext, _schedulerFactory, _logger);
     }
 }
     

@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
         settingsEntity.OwnsOne(x => x.AppLogSettings)
             .Property(x => x.MinLogLevel)
             .HasConversion<string>();
+        settingsEntity.OwnsOne(x => x.DataLogSettings);
 
         var deviceEntity = modelBuilder.Entity<DeviceEntity>();
         deviceEntity.ToTable("devices");
