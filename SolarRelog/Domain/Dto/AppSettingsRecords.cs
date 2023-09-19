@@ -2,4 +2,4 @@
 
 namespace SolarRelog.Domain.Dto;
 
-public record SettingsModel(AppLogSettings LogSettings, DataLogSettings DataLogSettings);
+public record SettingsModel(AppLogSettings LogSettings, DataLogSettings DataLogSettings, InfluxSettings InfluxSettings);

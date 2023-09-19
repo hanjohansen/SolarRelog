@@ -10,7 +10,7 @@ public interface IDeviceService
     
     Task<List<DeviceEntity>> GetAllDevices(CancellationToken ct = default);
     
-    Task<List<DeviceEntity>> GetActiveDevices(CancellationToken ct = default);
+    Task<List<DeviceEntity>> GetActiveDevices(bool tracked, CancellationToken ct = default);
 
     Task AddDevice(DeviceEntity newEntity, CancellationToken ct = default);
 

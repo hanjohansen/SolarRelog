@@ -8,7 +8,7 @@ public class BaseDeviceCommandHandler
 {
     protected async Task UnpausePollingJob(IDeviceService deviceService, ISchedulerFactory schedulerFactory, ILogger logger)
     {
-        var devices = await deviceService.GetActiveDevices();
+        var devices = await deviceService.GetActiveDevices(false);
 
         if (!devices.Any())
             return;

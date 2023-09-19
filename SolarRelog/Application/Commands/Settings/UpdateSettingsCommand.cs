@@ -40,6 +40,13 @@ public class UpdateSettingsCommandHandler : IRequestHandler<UpdateSettingsComman
             {
                 RetentionDays = model.DataLogSettings.RetentionDays,
                 PollingIntervalSeconds = model.DataLogSettings.PollingIntervalSeconds
+            },
+            InfluxSettings = new InfluxSettings()
+            {
+                Url = model.InfluxSettings.Url,
+                Organization = model.InfluxSettings.Organization,
+                Bucket = model.InfluxSettings.Bucket,
+                ApiToken = model.InfluxSettings.ApiToken
             }
         };
 

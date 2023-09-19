@@ -11,6 +11,7 @@ public static class ServiceExtension
         
         builder.Services.AddScoped<SettingsService>();
         builder.Services.AddScoped<SolarLogClientService>();
+        builder.Services.AddScoped<IInfluxService, InfluxService>();
 
         return builder;
     }

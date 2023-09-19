@@ -13,17 +13,19 @@ public class LogDataJob : IJob
     private readonly ILogDataService _logData;
     private readonly SettingsService _settingsService;
     private readonly SolarLogClientService _clientService;
+    private readonly IInfluxService _influxDb;
     private readonly ILogger _logger;
 
     private static readonly JobKey JobKey = new ("request-log-data-job", "log-data");
 
-    public LogDataJob(SettingsService settingsService, SolarLogClientService clientService, ILogger logger, IDeviceService devices, ILogDataService logData)
+    public LogDataJob(SettingsService settingsService, SolarLogClientService clientService, ILogger logger, IDeviceService devices, ILogDataService logData, IInfluxService influxDb)
     {
         _settingsService = settingsService;
         _clientService = clientService;
         _logger = logger;
         _devices = devices;
         _logData = logData;
+        _influxDb = influxDb;
     }
 
     public static JobKey Key => JobKey;
@@ -32,7 +34,7 @@ public class LogDataJob : IJob
     {
         await RescheduleJob(context);
 
-        var devices = await _devices.GetActiveDevices();
+        var devices = await _devices.GetActiveDevices(true);
 
         if (!devices.Any())
         {
@@ -46,7 +48,7 @@ public class LogDataJob : IJob
         foreach (var device in devices)
         {
             var log = await ProcessDevice(device);
-            if(log != null)
+            if (log != null)
                 logs.Add(log);
         }
 
@@ -55,21 +57,31 @@ public class LogDataJob : IJob
 
     private async Task<LogDataEntity?> ProcessDevice(DeviceEntity device)
     {
+        LogDataEntity? newEntity = null;
+        
         try
         {
             var logData = await GetLogData(device.Ip, device.Port);
 
-            var newEntity = logData.ToEntity()!;
-            newEntity.DeviceId = device.Id;
-
-            return newEntity;
+            newEntity = logData.ToEntity()!;
+            newEntity.Device = device;
         }
         catch (Exception ex)
         {
             _logger.Log(LogLevel.Error, ex.Message, ex.InnerException?.Message);
         }
 
-        return null;
+        try
+        {
+            if (newEntity != null)
+                await _influxDb.Send(newEntity);
+        }
+        catch (Exception ex)
+        {
+            _logger.Log(LogLevel.Error, "InfluxDb-sink error", ex);
+        }
+
+        return newEntity;
     }
 
     private async Task<SolarLogRequest> GetLogData(string ip, int? port)

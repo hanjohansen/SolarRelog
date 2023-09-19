@@ -44,10 +44,14 @@ public class DeviceService : IDeviceService
             .ToListAsync(ct);
     }
 
-    public async Task<List<DeviceEntity>> GetActiveDevices(CancellationToken ct = default)
+    public async Task<List<DeviceEntity>> GetActiveDevices(bool tracked, CancellationToken ct = default)
     {
-        return await _dbContext.Devices
-            .AsNoTracking()
+        var query = _dbContext.Devices.AsQueryable();
+
+        if (!tracked)
+            query = query.AsNoTracking();
+        
+        return await query
             .Where(x => x.IsActive)
             .ToListAsync(ct);
     }
@@ -55,6 +59,7 @@ public class DeviceService : IDeviceService
     public async Task AddDevice(DeviceEntity newEntity, CancellationToken ct = default)
     {
         await _dbContext.Devices.AddAsync(newEntity, ct);
+        await _dbContext.SaveChangesAsync(ct);
     }
 
     public async Task UpdateEntity(Guid id, string name, string ip, int? port, bool isActive, CancellationToken ct = default)
