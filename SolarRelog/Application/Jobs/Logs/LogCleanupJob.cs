@@ -30,7 +30,7 @@ public class LogCleanupJob : IJob
         var retentionDays = settings.AppLogSettings.RetentionDays;
         var refDate = DateTime.Now.AddDays(-retentionDays);
 
-        _logger.LogInformation($"Executing log-cleanup with {retentionDays} retention days");
+        _logger.LogInformation($"Executing app logs cleanup with {retentionDays} retention days");
         
         await _logContext.Logs.Where(x => x.TimeStamp < refDate)
             .ExecuteDeleteAsync();
