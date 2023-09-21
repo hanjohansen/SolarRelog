@@ -1,0 +1,61 @@
+version: "3.3"
+services:
+    influxdb:
+        image: influxdb:latest
+        container_name: influxdb
+        volumes:
+        - influxdb_storage:/var/lib/influxdb2:rw
+        networks:
+            solar_net:
+                ipv4_address: 172.30.0.5
+        ports:
+        - "8086:8086"
+
+    grafana:
+        image: grafana/grafana-oss:latest
+        container_name: grafana
+        volumes:
+        - grafana_storage:/var/lib/grafana:rw
+        networks:
+            solar_net:
+                ipv4_address: 172.30.0.6
+        ports:
+        - 3000:3000
+    solar_relog_dev_device:
+        build:
+            context: SolarRelogDevDevice/
+            dockerfile: ./Dockerfile
+        container_name: solar_log_dev_device
+        restart: unless-stopped
+        environment:
+            - ASPNETCORE_URLS=http://+:5010
+            - ASPNETCORE_ENVIRONMENT=Development
+        networks:
+            solar_net:
+                ipv4_address: 172.30.0.7
+        ports:
+            - 5010:5010
+    solar_relog_api:
+        build:
+            context: SolarRelog/
+            dockerfile: ./Dockerfile
+        container_name: solar_log_api
+        restart: unless-stopped
+        environment:
+            - ASPNETCORE_URLS=http://+:5000
+            - ASPNETCORE_ENVIRONMENT=Production
+        volumes:
+        - ./ProdDbs:/App/ProdDbs:rw
+        networks:
+            solar_net:
+                ipv4_address: 172.30.0.8
+        ports:
+            - 5000:5000
+volumes:
+    influxdb_storage:
+    grafana_storage:
+networks:
+  solar_net:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
