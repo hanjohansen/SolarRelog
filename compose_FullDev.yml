@@ -3,6 +3,7 @@ services:
     influxdb:
         image: influxdb:latest
         container_name: influxdb
+        restart: unless-stopped
         volumes:
         - influxdb_storage:/var/lib/influxdb2:rw
         networks:
@@ -14,6 +15,7 @@ services:
     grafana:
         image: grafana/grafana-oss:latest
         container_name: grafana
+        restart: unless-stopped
         volumes:
         - grafana_storage:/var/lib/grafana:rw
         networks:
