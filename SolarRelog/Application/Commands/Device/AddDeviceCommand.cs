@@ -63,10 +63,13 @@ public class AddDeviceCommandHandler : BaseDeviceCommandHandler, IRequestHandler
     {
         request.Validate();
 
-        var existing = await _devices.GetDeviceByIp(request.Ip, ct);
+        var existing = await _devices.GetAllDevices(ct);
 
-        if (existing != null)
+        if (existing.Any(x => x.Ip == request.Ip))
             throw new AppException("Provided Ip is already used by an existing device");
+        
+        if (existing.Any(x => x.Name == request.Name))
+            throw new AppException("Provided name is already used by an existing device");
 
         var newDevice = new DeviceEntity
         {

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Quartz;
+using SolarRelog.Application.Exceptions;
 using SolarRelog.Application.ServiceInterfaces;
 
 namespace SolarRelog.Application.Commands.Device;
@@ -27,6 +28,15 @@ public class UpdateDeviceCommandHandler : BaseDeviceCommandHandler, IRequestHand
     public async Task Handle(UpdateDeviceCommand request, CancellationToken cancellationToken)
     {
         request.Validate();
+
+        var existing = await _devices.GetAllDevices(cancellationToken);
+        existing = existing.Where(x => x.Id != request.Id).ToList();
+        
+        if (existing.Any(x => x.Ip == request.Ip))
+            throw new AppException("Provided Ip is already used by an existing device");
+        
+        if (existing.Any(x => x.Name == request.Name))
+            throw new AppException("Provided name is already used by an existing device");
 
         await _devices.UpdateEntity(
             request.Id,
