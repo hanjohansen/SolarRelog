@@ -6,6 +6,9 @@ namespace SolarRelog.Controllers;
 
 public class LogsController : Endpoint
 {
+    /// <summary>
+    /// Query application logs 
+    /// </summary>
     [HttpGet(template:"logs")]
     public async Task<ActionResult<List<LogEntity>>> Get([FromQuery]DateTime? from,  [FromQuery]DateTime? to, [FromQuery]LogLevel? level)
     {

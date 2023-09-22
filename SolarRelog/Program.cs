@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using SolarRelog;
 using SolarRelog.Application.Cache;
 using SolarRelog.Application.Exceptions;
 using SolarRelog.Application.Jobs;
@@ -25,8 +26,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add (new JsonStringEnumConverter ());
     });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.ConfigureSwagger();
 
 var app = builder.Build();
 app.Logger.LogInformation( "Starting App");

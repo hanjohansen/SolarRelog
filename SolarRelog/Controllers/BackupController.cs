@@ -5,6 +5,9 @@ namespace SolarRelog.Controllers;
 
 public class BackupController : Endpoint
 {
+    /// <summary>
+    /// Download a copy of the apps database file
+    /// </summary>
     [HttpGet(template:"backup")]
     public async Task<IActionResult> Get()
     {

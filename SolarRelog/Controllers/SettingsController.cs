@@ -7,6 +7,9 @@ namespace SolarRelog.Controllers;
 
 public class SettingsController : Endpoint
 {
+    /// <summary>
+    /// Get the current app settings
+    /// </summary>
     [HttpGet(template:"settings")]
     public async Task<ActionResult<SettingsModel>> Get()
     {
@@ -14,6 +17,9 @@ public class SettingsController : Endpoint
         return result;
     }
     
+    /// <summary>
+    /// Change the current app settings
+    /// </summary>
     [HttpPost(template:"settings")]
     public async Task<IActionResult> Update(SettingsModel model)
     {
