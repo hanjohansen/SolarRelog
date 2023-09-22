@@ -7,7 +7,6 @@ public record CreateBackupCommand : IRequest<BackupFile>;
 
 public class CreateBackupCommandHandler : IRequestHandler<CreateBackupCommand, BackupFile>
 {
-
     private readonly AppDbContext _dbContext;
 
     public CreateBackupCommandHandler(AppDbContext dbContext)

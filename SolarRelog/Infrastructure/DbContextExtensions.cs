@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System.Data.Common;
+using System.Data.SQLite;
 using System.Net.Mime;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ public static class DbContextExtensions
     public static async Task<BackupFile> CreateBackup(this DbContext context)
     {
         var sourceConnString = context.Database.GetConnectionString() ?? string.Empty;
-        
+
         var filePath = GetFilePathFromConnectionString(sourceConnString);
         var filename = filePath.Replace(".db", string.Empty);
         
@@ -43,7 +44,15 @@ public static class DbContextExtensions
 
     private static string GetFilePathFromConnectionString(string connectionString)
     {
-        var path = connectionString.Replace(ConnStrPrefix, string.Empty);
+        var dataSourcePart = ExtractDatasource(connectionString); 
+        var path = dataSourcePart.Replace(ConnStrPrefix, string.Empty);
         return path.Trim();
+    }
+
+    private static string ExtractDatasource(string connStr)
+    {
+        var builder = new DbConnectionStringBuilder();
+        builder.ConnectionString = connStr;
+        return ((string)builder["Data Source"]).Trim();
     }
 }
