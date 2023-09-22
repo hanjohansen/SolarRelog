@@ -31,15 +31,26 @@ public class InfluxService : IInfluxService
         if (!InfluxIsConfigured(influxSettings))
             return;
         
+        var points = new List<PointData>
+        {
+            PointData.Measurement("solarlogbase")
+                .Tag("Device", entity.Device.Name)
+                .Field("Pdc", Convert.ToDouble(entity.Pdc))
+                .Field("Pac", Convert.ToDouble(entity.Pac))
+                .Field("ConsPac", Convert.ToDouble(entity.ConsPac))
+                .Timestamp(entity.LoggedDate, WritePrecision.S)
+        };
+
+        foreach (var consumer in entity.ConsumerData)
+            points.Add(PointData.Measurement("consumer")
+                .Tag("Consumer", consumer.ConsumerIndex)
+                .Field("Consumption", Convert.ToDouble(consumer.Consumption))
+                .Timestamp(entity.LoggedDate, WritePrecision.S));
+        
         using var client = new InfluxDBClient(influxSettings.Url, influxSettings.ApiToken);
         var writeApi = client.GetWriteApiAsync();
 
-        var point = PointData.Measurement("solarlogbase")
-            .Tag("Device", entity.Device.Name)
-            .Field("Pdc", Convert.ToDouble(entity.Pdc))
-            .Field("Pac", Convert.ToDouble(entity.Pac))
-            .Timestamp(DateTime.UtcNow, WritePrecision.S);
-                
-        await writeApi.WritePointAsync(point, influxSettings.Bucket, influxSettings.Organization);
+        if (points.Any())
+            await writeApi.WritePointsAsync(points, influxSettings.Bucket, influxSettings.Organization);
     }
 }
