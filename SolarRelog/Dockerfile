@@ -6,7 +6,7 @@ COPY . .
 RUN dotnet restore
 
 # Build and publish a release
-RUN dotnet publish -c Release -o out -r linux-x64 --self-contained false
+RUN dotnet publish -c Release -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
