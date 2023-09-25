@@ -1,11 +1,16 @@
-﻿namespace SolarRelog.Domain.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace SolarRelog.Domain.Entities;
 
 public class LogDataEntity
 {
+    [JsonIgnore]
     public Guid Id { get; set; }
     
+    [JsonIgnore]
     public Guid DeviceId { get; set; }
 
+    [JsonIgnore]
     public DeviceEntity Device { get; set; } = null!;
 
     public List<LogConsumerData> ConsumerData { get; set; } = new();
