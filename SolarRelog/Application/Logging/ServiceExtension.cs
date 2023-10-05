@@ -20,7 +20,7 @@ public static class ServiceExtension
             .AddProvider(new AppLoggerProvider(serviceProvider));
 
         var client = serviceProvider.GetRequiredService<LogDbContext>();
-        client.Database.EnsureCreated();
+        client.Database.Migrate();
         client.Database.ExecuteSql($"PRAGMA journal_mode = 'delete';");
 
         return builder;

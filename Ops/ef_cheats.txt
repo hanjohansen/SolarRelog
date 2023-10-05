@@ -1,0 +1,3 @@
+dotnet ef migrations add "Initial" --context "AppDbContext" -o "./Infrastructure/Migrations/AppData"   
+
+dotnet ef migrations add "Initial" --context "LogDbContext" -o "./Infrastructure/Migrations/LogData"

@@ -14,7 +14,7 @@ public static class ServiceExtension
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         var client = serviceProvider.GetRequiredService<AppDbContext>();
-        client.Database.EnsureCreated();
+        client.Database.Migrate();
         client.Database.ExecuteSql($"PRAGMA journal_mode = 'delete';");
 
         return builder;
