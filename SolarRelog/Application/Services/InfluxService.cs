@@ -35,6 +35,7 @@ public class InfluxService : IInfluxService
         {
             PointData.Measurement("solarlogbase")
                 .Tag("Device", entity.Device.Name)
+                .Tag("DeviceId", entity.Device.Id.ToString())
                 .Field("Pdc", Convert.ToDouble(entity.Pdc))
                 .Field("Pac", Convert.ToDouble(entity.Pac))
                 .Field("ConsPac", Convert.ToDouble(entity.ConsPac))
@@ -44,6 +45,7 @@ public class InfluxService : IInfluxService
         foreach (var consumer in entity.ConsumerData)
             points.Add(PointData.Measurement("consumer")
                 .Tag("Consumer", consumer.ConsumerIndex)
+                .Tag("DeviceId", entity.Device.Id.ToString())
                 .Field("Consumption", Convert.ToDouble(consumer.Consumption))
                 .Timestamp(entity.LoggedDate, WritePrecision.S));
         
